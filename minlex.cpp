@@ -108,7 +108,11 @@ public:
 
   Sudoku(const char *str) {
     for (int i = 0; i < 81; i++) {
-      data[i] = str[i] - '0';
+     if ( str[i] >= '1' && str[i] <= '9' ) {
+      data[i] = str[i] - '0'; // 1-9 are givens
+     } else {
+      data[i] = 0; // accepts 0 and . or anything else for empty cell
+     }
     }
     array2bit();
   }
@@ -223,7 +227,11 @@ public:
     bit2array();
     std::stringstream ss;
     for (int i = 0; i < 81; i++) {
+     if ( data[i] ) {
       ss << (int)(data[i]);
+     } else {
+      ss << '.'; // output . for empty cell
+     }
     }
     return ss.str();
   }
@@ -483,9 +491,12 @@ void input(const char *filename) {
   MinlexSearcher s;
   std::ifstream ifs(filename);
   while (getline(ifs, line)) {
-    Sudoku g(line.c_str());
+   if ( line.length() >= 81 ) { // ignores lines with less than 81 characters
+    Sudoku g(line.substr(0,81).c_str()); // minlex first 81 characters
     std::cout << s.search(g) << std::endl;
+   }
   }
+  ifs.close(); // tidy up!
 }
 
 int main(int argc, char **argv) {
