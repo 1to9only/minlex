@@ -492,8 +492,11 @@ void input(const char *filename) {
   std::ifstream ifs(filename);
   while (getline(ifs, line)) {
    if ( line.length() >= 81 ) { // ignores lines with less than 81 characters
+    char ch = line[0]; // examine first character of line
+    if ( !( ch==' ' || ch=='_' || ch=='#' || (ch>='a' && ch<='z')) ) { // ignore lines starting with these chars
     Sudoku g(line.substr(0,81).c_str()); // minlex first 81 characters
     std::cout << s.search(g) << std::endl;
+    }
    }
   }
   ifs.close(); // tidy up!
