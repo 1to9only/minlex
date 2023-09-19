@@ -398,7 +398,7 @@ void init_bits(void) {
 
 class MinlexSearcher {
 private:
-  Sudoku min, max;
+  Sudoku min; //, max;
 
 public:
   void perm_restrbox(Sudoku &g) {
@@ -425,30 +425,31 @@ public:
         for (int i = 0; i < 6; i++) {
           if (!hlb_table[h1][i]) continue;
           int *ai = perm3[i];
-          Sudoku g2 = g.perm_columns(ai, aj, ak).renumbering();
-          if (min.head() < g2.head()) continue;
+          Sudoku g2 = g.perm_columns(ai, aj, ak);
+  //      Sudoku g2 = g.perm_columns(ai, aj, ak).renumbering();
+  //      if (min.head() < g2.head()) continue;
           perm_restrbox(g2);
         }
       }
     }
   }
-  void perm_toprbox(Sudoku &g, int hb_min) {
+  void perm_toprbox(Sudoku &g) { //, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_toprbox(a);
-      if (g2.headline_index() > hb_min) continue;
+  //  if (g2.headline_index() > hb_min) continue;
       perm_columns(g2);
     }
   }
-  void perm_cbox(Sudoku &g, int hb_min) {
+  void perm_cbox(Sudoku &g) { //, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_cbox(a);
-      if (g2.headbox_index(false) > hb_min) continue;
-      perm_toprbox(g2, hb_min);
+  //  if (g2.headbox_index(false) > hb_min) continue;
+      perm_toprbox(g2); //, hb_min);
     }
   }
 
   std::string search(Sudoku &g) {
-    min = max;
+    min = g.renumbering();
     std::vector<Sudoku> v;
     std::vector<int> vi;
     for (auto a : perm3) {
@@ -462,10 +463,10 @@ public:
       v.push_back(g2);
       vi.push_back(g2.headbox_index(true));
     }
-    int hb_min = *std::min_element(vi.begin(), vi.end());
+  //int hb_min = *std::min_element(vi.begin(), vi.end());
     for (size_t i = 0; i < v.size(); i++) {
-      if (vi[i] > hb_min) continue;
-      perm_cbox(v[i], hb_min);
+  //  if (vi[i] > hb_min) continue;
+      perm_cbox(v[i]); //, hb_min);
     }
     return min.str();
   }
